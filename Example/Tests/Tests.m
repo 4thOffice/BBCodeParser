@@ -145,7 +145,7 @@
 
 - (void)testTagWithStringValue
 {
-	NSString *code = @"[color=\"#00FF00 \"]Hexa color Grün[/color]";
+	NSString *code = @"[color=\"#00FF=00 \"]Hexa color Grün[/color]";
 	
 	NSArray *tags = [BBCodeParserTests getTags];
 	BBCodeParser *parser = [[BBCodeParser alloc] initWithTags:tags];
@@ -158,7 +158,7 @@
 	XCTAssertTrue(attributeNotFound, @"Attribute in tag with value not found");
 	BOOL attributeTagNameValid = [attribute.name isEqualToString:@"color"];
 	XCTAssertTrue(attributeTagNameValid, @"Attribute name in tag with value not valid");
-	BOOL attributeTagValueValid = [attribute.value isEqualToString:@"#00FF00"];
+	BOOL attributeTagValueValid = [attribute.value isEqualToString:@"#00FF=00"];
 	XCTAssertTrue(attributeTagValueValid, @"Attribute value in tag with value not valid");
 }
 

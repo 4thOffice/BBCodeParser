@@ -71,16 +71,15 @@ static NSString *__closingTag = @"/";
 	for (NSString *component in tagComponents)
 	{
 		NSArray *splitTagComponent = [component componentsSeparatedByString:@"="];
-		
-		BOOL isComponentValidForAttribute = splitTagComponent.count == 2;
-		
+		BOOL isComponentValidForAttribute = splitTagComponent.count > 1;
 		if (isComponentValidForAttribute == false)
 		{
 			continue;
 		}
 		
 		NSString *name = splitTagComponent[0];
-		NSString *value = splitTagComponent[1];
+		NSString *value = [component substringFromIndex:[name length] + 1];
+	
 		NSString *apostropheTrimmedValue = [value stringByTrimmingCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"\""]]; // how to improve this
 		BBAttribute *attribute = [[BBAttribute alloc] init];
 		

@@ -146,38 +146,41 @@ static NSString *__closingTag = @"/";
 
 - (void)parseStartedForTag:(NSString *)tag
 {
-    BBParsingElement *element = [[BBParsingElement alloc] init];
-    [element setStartIndex:_length];
-    
-    // Check if tag is valid BBCode tag.
-    NSArray *components = [tag componentsSeparatedByCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
-    if (components == nil || [components count] == 0)
-        @throw [NSException exceptionWithName:@"Invalid components count!" reason:@"Element tag isn't valid." userInfo:nil];
-    
-    // Set element's tag.
-    NSString *tagName = [components objectAtIndex:0];
-    [element setTag:tagName];
-    
-    // Set element's attributes.
-    NSArray *attributes = [self getAttributesFromTag:tag];
-    [element setAttributes:attributes];
-    
-    // Append children to last unparsed element.
-    BBParsingElement *parentElement = [self getLastUnparsedElement];
-    NSMutableArray *exitingChildren = [NSMutableArray arrayWithArray:parentElement.elements];
-    [exitingChildren addObject:element];
-    [parentElement setElements:exitingChildren];
-    
-    NSString *newFormat = [NSString stringWithFormat:@"%@%@%lu%@",
-                           parentElement.format,
-                           [BBCodeParser startTagCharacter],
-                           (unsigned long)([parentElement.elements count] - 1),
-                           [BBCodeParser endTagCharacter]];
-    [parentElement setFormat:newFormat];
-        
-    // If needed, notify delegate object.
-    if ([self.delegate respondsToSelector:@selector(parser:didStartElementTag:attributes:)])
-        [self.delegate parser:self didStartElementTag:tagName attributes:attributes];
+	BBParsingElement *element = [[BBParsingElement alloc] init];
+	[element setStartIndex:_length];
+	
+	// Check if tag is valid BBCode tag.
+	NSArray *components = [self getComponentsFrom:tag];
+	
+	if (components == nil || [components count] == 0)
+	@throw [NSException exceptionWithName:@"Invalid components count!" reason:@"Element tag isn't valid." userInfo:nil];
+	
+	// Set element's tag.
+	NSString *nameComponent = [components objectAtIndex:0];
+	NSArray *splitNameComponent = [nameComponent componentsSeparatedByString:@"="];
+	NSString *tagName = [splitNameComponent objectAtIndex:0];
+	[element setTag:tagName];
+	
+	// Set element's attributes.
+	NSArray *attributes = [self getAttributesFromTag:tag];
+	[element setAttributes:attributes];
+	
+	// Append children to last unparsed element.
+	BBParsingElement *parentElement = [self getLastUnparsedElement];
+	NSMutableArray *exitingChildren = [NSMutableArray arrayWithArray:parentElement.elements];
+	[exitingChildren addObject:element];
+	[parentElement setElements:exitingChildren];
+	
+	NSString *newFormat = [NSString stringWithFormat:@"%@%@%lu%@",
+						   parentElement.format,
+						   [BBCodeParser startTagCharacter],
+						   (unsigned long)([parentElement.elements count] - 1),
+						   [BBCodeParser endTagCharacter]];
+	[parentElement setFormat:newFormat];
+	
+	// If needed, notify delegate object.
+	if ([self.delegate respondsToSelector:@selector(parser:didStartElementTag:attributes:)])
+	[self.delegate parser:self didStartElementTag:tagName attributes:attributes];
 }
 
 - (void)parseFinishedForTag:(NSString *)tag
